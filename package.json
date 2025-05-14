@@ -11,5 +11,6 @@
     "node-red-contrib-mqtt-broker": "~0.2.9",
     "node-red-dashboard": "^3.6.5",
     "node-red-node-mysql": "^2.0.0"
-  }
+  }  
+
 }
