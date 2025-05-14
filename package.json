@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "description": "Node-RED en Render",
   "scripts": {
-    "start": "node-red"
+    "install": "npm install",  // Asegura que las dependencias se instalen correctamente
+    "start": "node-red"        // Inicia Node-RED
   },
   "dependencies": {
-    "node-red": "^3.1.0"
+    "node-red": "^3.1.0"       // Dependencia de Node-RED
   }
 }
-
