@@ -1,0 +1,748 @@
+[
+    {
+        "id": "48152d0cdc6dbc17",
+        "type": "tab",
+        "label": "Flujo 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "df41a19d336e464c",
+        "type": "tab",
+        "label": "Flujo 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "3c761867bfbaab57",
+        "type": "tab",
+        "label": "Flujo 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "6b214051df632d68",
+        "type": "tab",
+        "label": "SUBIR DATO a ESP32 temperatura",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "e06c7ec9a910b24d",
+        "type": "MySQLdatabase",
+        "name": "Base de Datos",
+        "host": "127.0.0.1",
+        "port": "3306",
+        "db": "Datos",
+        "tz": "",
+        "charset": "UTF8"
+    },
+    {
+        "id": "06f1a41594377380",
+        "type": "mqtt-broker",
+        "name": "servidor mqtt",
+        "broker": "7402f9c185e3460583256c74c33c31b4.s1.eu.hivemq.cloud",
+        "port": "8883",
+        "tls": "",
+        "clientid": "ESP32_Client",
+        "autoConnect": true,
+        "usetls": true,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "sensor/temperatura",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "e2731ac7fab08535",
+        "type": "http in",
+        "z": "48152d0cdc6dbc17",
+        "name": "API",
+        "url": "/datos",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 80,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a812beedc4bf2948",
+        "type": "function",
+        "z": "48152d0cdc6dbc17",
+        "name": "function 1",
+        "func": "var Fecha = msg.payload.fecha;\nvar Punto_de_Muestreo = msg.payload.punto_de_muestreo;\nvar Ph = msg.payload.ph;\nvar Conductividad = msg.payload.conductividad;\nvar Temperatura = msg.payload.temperatura;\nvar Turbidez = msg.payload.turbidez;\nvar Oxigeno_Disuelto = msg.payload.oxigeno_disuelto;\nvar Nitrato = msg.payload.nitrato;\nvar Coliformes_fecales = msg.payload.coliformes_fecales;\nvar Solidos_Disueltos_Totales = msg.payload.solidos_disueltos_totales;\n\n// Verificación de campos undefined\nif (Fecha === undefined || Punto_de_Muestreo === undefined || Ph === undefined || Conductividad === undefined || Temperatura === undefined || Turbidez === undefined || Oxigeno_Disuelto === undefined || Nitrato === undefined || Coliformes_fecales === undefined || Solidos_Disueltos_Totales === undefined) {\n    node.error(\"Alguna de las variables está undefined. Verifica el payload.\", msg);\n    return null;\n}\n\n// Construcción de la consulta SQL\nmsg.topic = \"INSERT INTO Parametros (Fecha, Punto_de_Muestreo, Ph, Conductividad, Temperatura, Turbidez, Oxigeno_Disuelto, Nitrato, Coliformes_fecales, Solidos_Disueltos_Totales) \" +\n            \"VALUES ('\" + Fecha + \"', '\" + Punto_de_Muestreo + \"', \" + Ph + \", \" + Conductividad + \", \" + Temperatura + \", \" + Turbidez + \", \" + Oxigeno_Disuelto + \", \" + Nitrato + \", \" + Coliformes_fecales + \", \" + Solidos_Disueltos_Totales + \")\";\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 540,
+        "y": 180,
+        "wires": [
+            [
+                "7aa42df97362fa35"
+            ]
+        ]
+    },
+    {
+        "id": "5342299da4b1f1fe",
+        "type": "http response",
+        "z": "48152d0cdc6dbc17",
+        "name": "RESPONSE",
+        "statusCode": "",
+        "headers": {},
+        "x": 110,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "7aa42df97362fa35",
+        "type": "mysql",
+        "z": "48152d0cdc6dbc17",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "Datos",
+        "x": 690,
+        "y": 180,
+        "wires": [
+            [
+                "75473b4e2c8eea44"
+            ]
+        ]
+    },
+    {
+        "id": "f7ef5f7c3bfcba32",
+        "type": "inject",
+        "z": "48152d0cdc6dbc17",
+        "name": "Ejecutar",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "{\"fecha\":\"2023-09-29\",\"punto_de_muestreo\":\"Puente\",\"ph\":6.5,\"conductividad\":20,\"temperatura\":253,\"turbidez\":3.4,\"oxigeno_disuelto\":80.5,\"nitrato\":85.3,\"coliformes_fecales\":15,\"solidos_disueltos_totales\":10.4}",
+        "payloadType": "json",
+        "x": 360,
+        "y": 180,
+        "wires": [
+            [
+                "a812beedc4bf2948"
+            ]
+        ]
+    },
+    {
+        "id": "75473b4e2c8eea44",
+        "type": "debug",
+        "z": "48152d0cdc6dbc17",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "8adea9a16af4c726",
+        "type": "http in",
+        "z": "df41a19d336e464c",
+        "name": "Subir datos",
+        "url": "/subir-datos",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 140,
+        "wires": [
+            [
+                "8a6a8a307515e25e"
+            ]
+        ]
+    },
+    {
+        "id": "743b0f5552f2d256",
+        "type": "function",
+        "z": "df41a19d336e464c",
+        "name": "function 2",
+        "func": "// Verificación de campos undefined y del tipo de payload\nnode.warn(\"Tipo de payload recibido: \" + typeof msg.payload);\nnode.warn(\"Contenido del payload recibido: \" + msg.payload);\n\nvar datos;\n\n// Verificar si el payload es una cadena y convertirla a objeto JSON\nif (typeof msg.payload === \"string\") {\n    try {\n        datos = JSON.parse(msg.payload);\n    } catch (error) {\n        node.error(\"Error: No se pudo parsear el JSON - \" + error.message, msg);\n        return null;  // Detener la ejecución si hay un error de parseo\n    }\n} else {\n    datos = msg.payload;\n}\n\n// Asignación de las variables a partir de los datos\nvar Punto_de_Muestreo = datos.Punto_de_Muestreo;  // Capturamos Punto_de_Muestreo, pero no lo usaremos aún en el SQL\nvar Fecha = datos.Fecha;\nvar Temperatura_ambiente = datos.Temperatura_ambiente;\nvar Temperatura_del_agua = datos.Temperatura_del_agua;\nvar Oxigeno_disuelto = datos.Oxigeno_disuelto;\nvar Ph = datos.Ph;\nvar Conductividad = datos.Conductividad;\nvar Solidos_totales = datos.Solidos_totales;\nvar DBO5 = datos.DBO5;\nvar Nitrógeno = datos.Nitrógeno;\nvar Fósforo = datos.Fósforo;\n\n// Verificación de campos undefined\nif (Fecha === undefined || Temperatura_ambiente === undefined || Temperatura_del_agua === undefined || Oxigeno_disuelto === undefined || Ph === undefined || Conductividad === undefined || Solidos_totales === undefined || DBO5 === undefined || Nitrógeno === undefined || Fósforo === undefined) {\n    node.error(\"Alguna de las variables está undefined. Verifica el payload.\", msg);\n    return null;\n}\n\n// Mapeo de Punto_de_Muestreo a los nombres de las tablas en la base de datos\nvar tablaCorrespondiente = \"\";\nswitch (Punto_de_Muestreo) {\n    case \"Puente Siles\":\n        tablaCorrespondiente = \"puente_siles\";\n        break;\n    case \"Puente Cobija\":\n        tablaCorrespondiente = \"puente_cobija\";\n        break;\n    case \"Puente Killman\":\n        tablaCorrespondiente = \"puente_killman\";\n        break;\n    case \"Zona la Maica\":\n        tablaCorrespondiente = \"zona_la_maica\";\n        break;\n    case \"Zona Calvario Quillacollo\":\n        tablaCorrespondiente = \"zona_calvario_quillacollo\";\n        break;\n    default:\n        node.error(\"Punto de muestreo desconocido: \" + Punto_de_Muestreo, msg);\n        return null;  // Si el punto de muestreo no está en la lista, detener la ejecución\n}\n\n// Construcción de la consulta SQL (sin Punto_de_Muestreo)\nmsg.topic = \"INSERT INTO \" + tablaCorrespondiente + \" (Fecha, Temperatura_ambiente, Temperatura_del_agua, Oxigeno_disuelto, Ph, Conductividad, Solidos_totales, DBO5, Nitrógeno, Fósforo) \" +\n            \"VALUES ('\" + Fecha + \"', \" + Temperatura_ambiente + \", \" + Temperatura_del_agua + \", \" + Oxigeno_disuelto + \", \" + Ph + \", \" + Conductividad + \", \" + Solidos_totales + \", \" + DBO5 + \", \" + Nitrógeno + \", \" + Fósforo + \")\";\n\n// Mensaje de advertencia con la consulta SQL generada\nnode.warn(\"Consulta SQL generada (sin Punto_de_Muestreo): \" + msg.topic);\n\n// Puedes usar Punto_de_Muestreo para otros fines si lo necesitas\nnode.warn(\"Punto_de_Muestreo recibido: \" + Punto_de_Muestreo);\n\nreturn msg;  // Retorna el mensaje con la consulta SQL\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 400,
+        "y": 140,
+        "wires": [
+            [
+                "9c74d938f2837cfa"
+            ]
+        ]
+    },
+    {
+        "id": "9c74d938f2837cfa",
+        "type": "mysql",
+        "z": "df41a19d336e464c",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "Datos",
+        "x": 570,
+        "y": 140,
+        "wires": [
+            [
+                "df2b1877f649e2bb"
+            ]
+        ]
+    },
+    {
+        "id": "ef49b6996d204733",
+        "type": "http response",
+        "z": "df41a19d336e464c",
+        "name": "Resultado",
+        "statusCode": "",
+        "headers": {},
+        "x": 860,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "cc383ec6165e4842",
+        "type": "debug",
+        "z": "df41a19d336e464c",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": true,
+        "tostatus": false,
+        "complete": "true",
+        "targetType": "full",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 430,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "8a6a8a307515e25e",
+        "type": "json",
+        "z": "df41a19d336e464c",
+        "name": "",
+        "property": "payload",
+        "action": "str",
+        "pretty": false,
+        "x": 250,
+        "y": 140,
+        "wires": [
+            [
+                "cc383ec6165e4842",
+                "743b0f5552f2d256"
+            ]
+        ]
+    },
+    {
+        "id": "df2b1877f649e2bb",
+        "type": "function",
+        "z": "df41a19d336e464c",
+        "name": "function 4",
+        "func": "msg.headers = { \"Content-Type\": \"application/json\" };\nmsg.payload = { \"message\": \"Datos insertados correctamente\" };\nmsg.statusCode = 200;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 720,
+        "y": 140,
+        "wires": [
+            [
+                "ef49b6996d204733"
+            ]
+        ]
+    },
+    {
+        "id": "e05faeab820202b6",
+        "type": "function",
+        "z": "df41a19d336e464c",
+        "name": "function 6",
+        "func": "// Verificación de campos undefined y del tipo de payload\nnode.warn(\"Tipo de payload recibido: \" + typeof msg.payload);\nnode.warn(\"Contenido del payload recibido: \" + msg.payload);\n\nvar Punto_de_Muestreo;\n\n// Verificar si el payload es una cadena y convertirla a objeto JSON\nif (msg.req && msg.req.query && msg.req.query.Punto_de_Muestreo) {\n    Punto_de_Muestreo = msg.req.query.Punto_de_Muestreo;\n    node.warn(\"Punto_de_Muestreo recibido desde query: \" + Punto_de_Muestreo);\n}\nelse if (msg.payload && msg.payload.Punto_de_Muestreo) {\n    Punto_de_Muestreo = msg.payload.Punto_de_Muestreo;\n    node.warn(\"Punto_de_Muestreo recibido desde payload: \" + Punto_de_Muestreo);\n} else {\n    node.error(\"No se recibió Punto_de_Muestreo ni en query ni en payload\");\n    return null;\n}\n\n\n\n// Mapeo del Punto_de_Muestreo a la tabla correspondiente\nvar tablaCorrespondiente = \"\";\nswitch (Punto_de_Muestreo) {\n    case \"puente siles\":\n        tablaCorrespondiente = \"puente_siles\";\n        break;\n    case \"puente cobija\":\n        tablaCorrespondiente = \"puente_cobija\";\n        break;\n    case \"puente killman\":\n        tablaCorrespondiente = \"puente_killman\";\n        break;\n    case \"zona la maica\":\n        tablaCorrespondiente = \"zona_la_maica\";\n        break;\n    case \"zona calvario quillacollo\":\n        tablaCorrespondiente = \"zona_calvario_quillacollo\";\n        break;\n    default:\n        node.error(\"Punto de muestreo desconocido: \" + Punto_de_Muestreo, msg);\n        return null;\n}\n\n// Construcción de la consulta SQL para obtener los datos\nmsg.topic = \"SELECT * FROM \" + tablaCorrespondiente + \" ORDER BY date DESC\";\n\n// Mensaje de advertencia con la consulta SQL generada\nnode.warn(\"Consulta SQL generada para GET: \" + msg.topic);\nnode.warn(\"Punto_de_Muestreo recibido: \" + Punto_de_Muestreo);\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 340,
+        "y": 340,
+        "wires": [
+            [
+                "43f1688e65a52ce9"
+            ]
+        ]
+    },
+    {
+        "id": "43f1688e65a52ce9",
+        "type": "mysql",
+        "z": "df41a19d336e464c",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "",
+        "x": 600,
+        "y": 340,
+        "wires": [
+            [
+                "4eb886c2df33fe8c"
+            ]
+        ]
+    },
+    {
+        "id": "9b12aba22ddddeab",
+        "type": "http in",
+        "z": "df41a19d336e464c",
+        "name": "MOSTRAR",
+        "url": "/get-data",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 340,
+        "wires": [
+            [
+                "e05faeab820202b6"
+            ]
+        ]
+    },
+    {
+        "id": "4eb886c2df33fe8c",
+        "type": "http response",
+        "z": "df41a19d336e464c",
+        "name": "RESPUESTA",
+        "statusCode": "",
+        "headers": {},
+        "x": 840,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "485d2ecef23ca294",
+        "type": "http in",
+        "z": "df41a19d336e464c",
+        "name": "ELIMINAR",
+        "url": "/delete-data",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 420,
+        "wires": [
+            [
+                "a8c703da512efe5a"
+            ]
+        ]
+    },
+    {
+        "id": "7a87a410f0f95b82",
+        "type": "http in",
+        "z": "df41a19d336e464c",
+        "name": "EDITAR",
+        "url": "/update-data",
+        "method": "put",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 90,
+        "y": 480,
+        "wires": [
+            [
+                "77b054106359b160"
+            ]
+        ]
+    },
+    {
+        "id": "32201d241c712ac1",
+        "type": "http in",
+        "z": "df41a19d336e464c",
+        "name": "AGREGAR",
+        "url": "/create-data",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 540,
+        "wires": [
+            [
+                "e64dcc6e1e372d2b"
+            ]
+        ]
+    },
+    {
+        "id": "a8c703da512efe5a",
+        "type": "function",
+        "z": "df41a19d336e464c",
+        "name": "function 7",
+        "func": "// Verificación de campos undefined y del tipo de payload\nnode.warn(\"Tipo de payload recibido: \" + typeof msg.payload);\nnode.warn(\"Contenido del payload recibido: \" + msg.payload);\n\nvar Punto_de_Muestreo;\nvar id;\n\n// Verificar si el payload es una cadena y convertirla a objeto JSON\nif (msg.req && msg.req.query) {\n    Punto_de_Muestreo = msg.req.query.Punto_de_Muestreo;\n    id = msg.req.query.id;\n    node.warn(\"Punto_de_Muestreo recibido desde query: \" + Punto_de_Muestreo);\n    node.warn(\"ID recibido desde query: \" + id);\n}\nelse if (msg.payload) {\n    Punto_de_Muestreo = msg.payload.Punto_de_Muestreo;\n    id = msg.payload.id;\n    node.warn(\"Punto_de_Muestreo recibido desde payload: \" + Punto_de_Muestreo);\n    node.warn(\"ID recibido desde payload: \" + id);\n}\n\nif (!Punto_de_Muestreo || !id) {\n    node.error(\"Falta el Punto_de_Muestreo o el ID del registro a eliminar.\");\n    return null;\n}\n\n// Mapeo del Punto_de_Muestreo a la tabla correspondiente\nvar tablaCorrespondiente = \"\";\nswitch (Punto_de_Muestreo) {\n    case \"puente siles\":\n        tablaCorrespondiente = \"puente_siles\";\n        break;\n    case \"puente cobija\":\n        tablaCorrespondiente = \"puente_cobija\";\n        break;\n    case \"puente killman\":\n        tablaCorrespondiente = \"puente_killman\";\n        break;\n    case \"zona la maica\":\n        tablaCorrespondiente = \"zona_la_maica\";\n        break;\n    case \"zona calvario quillacollo\":\n        tablaCorrespondiente = \"zona_calvario_quillacollo\";\n        break;\n    default:\n        node.error(\"Punto de muestreo desconocido: \" + Punto_de_Muestreo, msg);\n        return null;\n}\n\n// Construcción de la consulta SQL para eliminar el registro\nmsg.topic = \"DELETE FROM \" + tablaCorrespondiente + \" WHERE id = \" + id;\n\n// Mensaje de advertencia con la consulta SQL generada\nnode.warn(\"Consulta SQL generada para DELETE: \" + msg.topic);\nnode.warn(\"Punto_de_Muestreo: \" + Punto_de_Muestreo + \", ID: \" + id);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 420,
+        "wires": [
+            [
+                "4ae6a06553a6ba46"
+            ]
+        ]
+    },
+    {
+        "id": "77b054106359b160",
+        "type": "function",
+        "z": "df41a19d336e464c",
+        "name": "function 8",
+        "func": "// Mostrar tipo y contenido del payload recibido\nnode.warn(\"Tipo de payload recibido: \" + typeof msg.payload);\nnode.warn(\"Contenido del payload recibido: \" + JSON.stringify(msg.payload));\n\nvar Punto_de_Muestreo;\nvar id;\nvar nuevosDatos = {};\n\n// Verificar si los datos vienen desde el body del payload (correcto)\nif (msg.payload) {\n    Punto_de_Muestreo = msg.payload.Punto_de_Muestreo;\n    id = msg.payload.id;\n    nuevosDatos = msg.payload;\n}\n\nif (!Punto_de_Muestreo || !id) {\n    node.error(\"Falta el Punto_de_Muestreo o el ID del registro a actualizar.\");\n    return null;\n}\n\n// Mapeo del Punto_de_Muestreo a la tabla correspondiente\nvar tablaCorrespondiente = \"\";\nswitch (Punto_de_Muestreo.toLowerCase()) {\n    case \"puente siles\":\n        tablaCorrespondiente = \"puente_siles\";\n        break;\n    case \"puente cobija\":\n        tablaCorrespondiente = \"puente_cobija\";\n        break;\n    case \"puente killman\":\n        tablaCorrespondiente = \"puente_killman\";\n        break;\n    case \"zona la maica\":\n        tablaCorrespondiente = \"zona_la_maica\";\n        break;\n    case \"zona calvario quillacollo\":\n        tablaCorrespondiente = \"zona_calvario_quillacollo\";\n        break;\n    default:\n        node.error(\"Punto de muestreo desconocido: \" + Punto_de_Muestreo, msg);\n        return null;\n}\n\n// Eliminar campos que no deben actualizarse\ndelete nuevosDatos.Punto_de_Muestreo;\ndelete nuevosDatos.id;\n\n// Si no hay campos a actualizar, salir\nif (Object.keys(nuevosDatos).length === 0) {\n    node.error(\"No se proporcionaron campos para actualizar.\");\n    return null;\n}\n\n// Construir consulta SQL (escapando comillas simples)\nvar setValues = Object.keys(nuevosDatos)\n    .map(key => `${key} = '${String(nuevosDatos[key]).replace(/'/g, \"''\")}'`)\n    .join(\", \");\n\n// Armar la consulta final\nmsg.topic = `UPDATE ${tablaCorrespondiente} SET ${setValues} WHERE id = '${id}'`;\n\n// Logs para depuración\nnode.warn(\"Consulta SQL generada: \" + msg.topic);\nnode.warn(\"Actualizando en tabla: \" + tablaCorrespondiente + \", ID: \" + id);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 480,
+        "wires": [
+            [
+                "a952fef808f37bca"
+            ]
+        ]
+    },
+    {
+        "id": "e64dcc6e1e372d2b",
+        "type": "function",
+        "z": "df41a19d336e464c",
+        "name": "function 9",
+        "func": "// Mostrar el payload recibido\nnode.warn(\"Payload recibido: \" + JSON.stringify(msg.payload));\n\nvar Punto_de_Muestreo = msg.payload.Punto_de_Muestreo;\nvar nuevosDatos = msg.payload;\n\n// Validación del punto de muestreo\nif (!Punto_de_Muestreo) {\n    node.error(\"Falta el campo 'Punto_de_Muestreo'.\");\n    return null;\n}\n\n// Mapeo del Punto_de_Muestreo a la tabla correspondiente\nvar tablaCorrespondiente = \"\";\nswitch (Punto_de_Muestreo.toLowerCase()) {\n    case \"puente siles\":\n        tablaCorrespondiente = \"puente_siles\";\n        break;\n    case \"puente cobija\":\n        tablaCorrespondiente = \"puente_cobija\";\n        break;\n    case \"puente killman\":\n        tablaCorrespondiente = \"puente_killman\";\n        break;\n    case \"zona la maica\":\n        tablaCorrespondiente = \"zona_la_maica\";\n        break;\n    case \"zona calvario quillacollo\":\n        tablaCorrespondiente = \"zona_calvario_quillacollo\";\n        break;\n    default:\n        node.error(\"Punto de muestreo desconocido: \" + Punto_de_Muestreo, msg);\n        return null;\n}\n\n// Eliminar campos que no deben insertarse\ndelete nuevosDatos.Punto_de_Muestreo;\ndelete nuevosDatos.id;\n\n// Generar nombres de columnas y valores\nvar columnas = [];\nvar valores = [];\n\nfor (let key in nuevosDatos) {\n    columnas.push(key);\n    \n    let val = nuevosDatos[key];\n\n    // Si el valor es null, undefined o string vacío => insertar como NULL\n    if (val === null || val === undefined || val === \"\") {\n        valores.push(\"NULL\");\n    } else {\n        // Escapar comillas simples si hay texto\n        valores.push(`'${String(val).replace(/'/g, \"''\")}'`);\n    }\n}\n\n// Si no hay columnas (aunque no debería pasar), abortar\nif (columnas.length === 0) {\n    node.error(\"No hay columnas para insertar.\");\n    return null;\n}\n\n// Generar consulta SQL\nmsg.topic = `INSERT INTO ${tablaCorrespondiente} (${columnas.join(\", \")}) VALUES (${valores.join(\", \")})`;\n\n// Log de depuración\nnode.warn(\"Consulta SQL generada para INSERT: \" + msg.topic);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 300,
+        "y": 540,
+        "wires": [
+            [
+                "120fc5e790454117"
+            ]
+        ]
+    },
+    {
+        "id": "4ae6a06553a6ba46",
+        "type": "mysql",
+        "z": "df41a19d336e464c",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "",
+        "x": 520,
+        "y": 420,
+        "wires": [
+            [
+                "9909aaf463c9f4e2"
+            ]
+        ]
+    },
+    {
+        "id": "a952fef808f37bca",
+        "type": "mysql",
+        "z": "df41a19d336e464c",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "",
+        "x": 520,
+        "y": 480,
+        "wires": [
+            [
+                "197285db7a11508b"
+            ]
+        ]
+    },
+    {
+        "id": "120fc5e790454117",
+        "type": "mysql",
+        "z": "df41a19d336e464c",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "",
+        "x": 520,
+        "y": 540,
+        "wires": [
+            [
+                "0d080271c5177f96"
+            ]
+        ]
+    },
+    {
+        "id": "9909aaf463c9f4e2",
+        "type": "http response",
+        "z": "df41a19d336e464c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "197285db7a11508b",
+        "type": "http response",
+        "z": "df41a19d336e464c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "0d080271c5177f96",
+        "type": "http response",
+        "z": "df41a19d336e464c",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 730,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "a80eddf8d7029ca4",
+        "type": "http in",
+        "z": "3c761867bfbaab57",
+        "name": "Subir datos",
+        "url": "/subir-datos",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 290,
+        "y": 100,
+        "wires": [
+            [
+                "85e9f899a4b29477"
+            ]
+        ]
+    },
+    {
+        "id": "55d9717a55e07629",
+        "type": "mysql",
+        "z": "3c761867bfbaab57",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "datos",
+        "x": 750,
+        "y": 100,
+        "wires": [
+            [
+                "62cc27722805f3da"
+            ]
+        ]
+    },
+    {
+        "id": "85e9f899a4b29477",
+        "type": "json",
+        "z": "3c761867bfbaab57",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 450,
+        "y": 100,
+        "wires": [
+            [
+                "72415677dddb12aa",
+                "97e5b6a0482d7015"
+            ]
+        ]
+    },
+    {
+        "id": "62cc27722805f3da",
+        "type": "http response",
+        "z": "3c761867bfbaab57",
+        "name": "Response",
+        "statusCode": "401",
+        "headers": {},
+        "x": 960,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "3aa5a8efd1ead144",
+        "type": "function",
+        "z": "3c761867bfbaab57",
+        "name": "function 3",
+        "func": "// Obtener los datos del cuerpo de la solicitud (provenientes del formulario)\nvar formData = msg.payload;\n\n// Determinar la tabla a la que se deben insertar los datos\nvar tableName = formData.Punto_de_Muestreo.replace(/\\s+/g, '_'); // Reemplazar los espacios por guiones bajos\n\n// Comprobar si la tabla existe\nvar validTables = ['Puente_Siles', 'Puente_Cobija', 'Puente_Killman', 'Zona_la_Maica', 'Zona_Calvario_Quillacollo'];\n\nif (validTables.indexOf(tableName) === -1) {\n    // Si el punto de muestreo no es válido, enviamos un error\n    msg.payload = { success: false, error: 'Punto de muestreo no válido.' };\n    return msg; // Finaliza el flujo aquí con un error\n}\n\n// Crear el objeto con los campos para insertar en la base de datos\nvar queryParams = [\n    formData.Fecha,\n    formData.Temperatura_ambiente,\n    formData.Temperatura_del_agua,\n    formData.Oxigeno_disuelto,\n    formData.Ph,\n    formData.Conductividad,\n    formData.Solidos_totales,\n    formData.DBO5,\n    formData.Nitrogeno,\n    formData.Fosforo\n];\n\n// La consulta SQL que va a insertar los datos en la tabla correspondiente\nvar sqlQuery = `\n    INSERT INTO ${tableName} (\n        Fecha, \n        Temperatura_ambiente, \n        Temperatura_del_agua, \n        Oxigeno_disuelto, \n        Ph, \n        Conductividad, \n        Solidos_totales, \n        DBO5, \n        Nitrógeno, \n        Fósforo\n    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);\n`;\n\n// Enviar la consulta SQL y los parámetros\nmsg.topic = sqlQuery;\nmsg.payload = queryParams;\n\nconsole.log(\"Consulta SQL:\", msg.topic);\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 100,
+        "wires": [
+            [
+                "55d9717a55e07629",
+                "8c9d6adccae7fc54"
+            ]
+        ]
+    },
+    {
+        "id": "97e5b6a0482d7015",
+        "type": "debug",
+        "z": "3c761867bfbaab57",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 580,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "8c9d6adccae7fc54",
+        "type": "debug",
+        "z": "3c761867bfbaab57",
+        "name": "debug 4",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "72415677dddb12aa",
+        "type": "function",
+        "z": "3c761867bfbaab57",
+        "name": "prueba",
+        "func": "var datos = msg.payload;\n\n// Campos requeridos\nvar camposRequeridos = [\n    \"Punto_de_Muestreo\", \"Fecha\", \"Temperatura_ambiente\",\n    \"Temperatura_del_agua\", \"Oxigeno_disuelto\", \"Ph\",\n    \"Conductividad\", \"Solidos_totales\", \"DBO5\", \"Nitrógeno\", \"Fósforo\"\n];\n\n// Verificar si todos los campos requeridos están presentes y no son vacíos\nfor (var i = 0; i < camposRequeridos.length; i++) {\n    if (!datos.hasOwnProperty(camposRequeridos[i])) {\n        node.error(\"Error: Falta el campo \" + camposRequeridos[i], msg);\n        return null;  // Terminar la ejecución si falta un campo\n    } else if (datos[camposRequeridos[i]] === \"\" || datos[camposRequeridos[i]] === null) {\n        node.error(\"Error: El campo \" + camposRequeridos[i] + \" está vacío\", msg);\n        return null;  // Terminar la ejecución si un campo está vacío\n    }\n}\n\nnode.warn(\"Datos recibidos: \" + JSON.stringify(datos));\nreturn msg;  // Si todo está bien, devuelve el mensaje\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 180,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8125f45c94894ad1",
+        "type": "mqtt in",
+        "z": "6b214051df632d68",
+        "name": "",
+        "topic": "sensor_data/all",
+        "qos": "0",
+        "datatype": "auto-detect",
+        "broker": "06f1a41594377380",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 280,
+        "y": 140,
+        "wires": [
+            [
+                "46aef93388b0a793",
+                "cfd9f07073a48d1d"
+            ]
+        ]
+    },
+    {
+        "id": "46aef93388b0a793",
+        "type": "debug",
+        "z": "6b214051df632d68",
+        "name": "debug 5",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 500,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "cfd9f07073a48d1d",
+        "type": "function",
+        "z": "6b214051df632d68",
+        "name": "function 5",
+        "func": "var table = msg.payload.point;  // Nombre de la tabla desde el mensaje\n\n// Validar que el punto sea uno de los nombres permitidos\nvar validTables = [\n    \"puente_cobija\",\n    \"puente_killman\",\n    \"puente_siles\",\n    \"zona_calvario_quillacollo\",\n    \"zona_la_maica\"\n];\n\nif (!validTables.includes(table)) {\n    node.error(\"Nombre de tabla no válido: \" + table);\n    return null;\n}\n\n// Convertir los datos numéricos\nvar temp_amb = parseFloat(msg.payload.temp_amb);\nvar temperature = parseFloat(msg.payload.temperature);\nvar oxygen = parseFloat(msg.payload.oxygen);\nvar ph = parseFloat(msg.payload.ph);\nvar conductivity = parseFloat(msg.payload.conductivity);\nvar solid = parseFloat(msg.payload.solid);\nvar dbo5 = parseFloat(msg.payload.dbo5);\nvar nitrogen = parseFloat(msg.payload.nitrogen);\nvar phosphorus = parseFloat(msg.payload.phosphorus);\nvar turbidity = parseFloat(msg.payload.turbidity);\n\n// Función para valores válidos o null\nfunction getValidValue(value) {\n    return isNaN(value) ? \"null\" : value;\n}\n\n// Obtener fecha y hora en el formato requerido: \"2025-04-06T08:00:00\"\nvar now = new Date();\nvar year = now.getFullYear();\nvar month = String(now.getMonth() + 1).padStart(2, '0');\nvar day = String(now.getDate()).padStart(2, '0');\nvar hours = String(now.getHours()).padStart(2, '0');\nvar minutes = String(now.getMinutes()).padStart(2, '0');\nvar seconds = String(now.getSeconds()).padStart(2, '0');\n\n// Crear el timestamp en el formato \"YYYY-MM-DDTHH:MM:SS\"\nvar date = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;\n\n// Crear la consulta SQL\nvar query = `INSERT INTO ${table} (temp_amb, temperature, oxygen, ph, conductivity, solid, dbo5, nitrogen, phosphorus, turbidity, date) VALUES (`;\nquery += `${getValidValue(temp_amb)}, `;\nquery += `${getValidValue(temperature)}, `;\nquery += `${getValidValue(oxygen)}, `;\nquery += `${getValidValue(ph)}, `;\nquery += `${getValidValue(conductivity)}, `;\nquery += `${getValidValue(solid)}, `;\nquery += `${getValidValue(dbo5)}, `;\nquery += `${getValidValue(nitrogen)}, `;\nquery += `${getValidValue(phosphorus)}, `;\nquery += `${getValidValue(turbidity)}, `;\nquery += `'${date}');`;\n\n// Asignar al mensaje\nmsg.topic = query;\nmsg.payload = null;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "60",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 500,
+        "y": 140,
+        "wires": [
+            [
+                "741f4ef7b32e5f10"
+            ]
+        ]
+    },
+    {
+        "id": "741f4ef7b32e5f10",
+        "type": "mysql",
+        "z": "6b214051df632d68",
+        "mydb": "e06c7ec9a910b24d",
+        "name": "datitos tem",
+        "x": 690,
+        "y": 140,
+        "wires": [
+            []
+        ]
+    }
+]
