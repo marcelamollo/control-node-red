@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Node-RED en Render",
   "scripts": {
-    "install": "npm install",
     "start": "node-red"
   },
   "dependencies": {
