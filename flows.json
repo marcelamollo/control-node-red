@@ -35,8 +35,8 @@
         "id": "e06c7ec9a910b24d",
         "type": "MySQLdatabase",
         "name": "Base de Datos",
-        "host": "127.0.0.1",
-        "port": "3306",
+        "host": "7402f9c185e3460583256c74c33c31b4.s1.eu.hivemq.cloud",
+        "port": "8883",
         "db": "Datos",
         "tz": "",
         "charset": "UTF8"

@@ -4,13 +4,13 @@
   "description": "Node-RED en Render",
   "private": true,
   "scripts": {
-    "start": "node-red"
+    "start": "node-red",
+    "build": "npm install && npm install node-red-node-mysql"
   },
   "dependencies": {
     "node-red": "^3.1.0",
     "node-red-contrib-mqtt-broker": "~0.2.9",
     "node-red-dashboard": "^3.6.5",
     "node-red-node-mysql": "^2.0.0"
-  }  
-
+  }
 }
