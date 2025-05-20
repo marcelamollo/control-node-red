@@ -4,7 +4,7 @@
   "description": "Node-RED en Render",
   "private": true,
   "scripts": {
-    "start": "node-red",
+    "start": "node-red -p $PORT",
     "build": "npm install && npm install node-red-node-mysql"
   },
   "dependencies": {
